@@ -177,6 +177,7 @@ static node *instantiate_permutation(unsigned seed, struct coefficients *usable)
 {
     srand(seed);
 
+    int debug_i = 0;
     //instantiate a permutation of DCT coefficients, using Fisher-Yates algorithm
     size_t permutationArray[usable->size];
     
@@ -208,6 +209,8 @@ static node *instantiate_permutation(unsigned seed, struct coefficients *usable)
         //creates linked list of the coefficients, as shuffled by the permutation
         node *new_node = malloc(sizeof(node));
         new_node->coeff_struct = usable->array[permutationArray[linked_list_index]];
+        new_node->debugindex = debug_i;
+        debug_i++;
         add_to_linked_list(new_node, current_node);
         current_node = current_node->next;
     }
@@ -350,7 +353,7 @@ int main(int argc, char * argv[])
         embed(coef_buffers, args.embedMessage, root, usable_size);
         write_DCT(args.outputname, coef_buffers, &outputinfo);
 
-        extract(120, root, usable_size);
+        extract(3488, root, usable_size);
     }
     else if (args.extractFlag) {
         extract(args.message_size, root, usable_size);

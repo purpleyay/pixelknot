@@ -24,6 +24,7 @@ typedef struct node node;
 //linked list node
 struct node{
     buffer_coefficient coeff_struct;
+    int debugindex;
     node *next;
     node *prev;
 };
