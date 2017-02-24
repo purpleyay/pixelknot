@@ -33,6 +33,17 @@ static void print_string_binary(const char *string, int k) {
     }
 }
 
+void print_debug_linked_list(node *root, size_t n) {
+    node *current_node = root->next;
+
+    for (size_t i = 0; i < n; i++) {
+        printf("%i ", current_node->coeff_struct.coefficient);
+        current_node = current_node->next;
+    }
+    printf ("\n");
+}
+
+
 static size_t get_message_partition_size(size_t message_size_in_bits, size_t list_size) {
     size_t k = 1;
     float embed_rate = (float)message_size_in_bits/list_size;
@@ -89,19 +100,11 @@ static int unequalArray(short *a1, short *a2, size_t size, size_t unequal) {
     return 1;
 }
 
-
-//static int equalLL(node *n1, node *n2, size_t size) {
-//    for (int i = 0; i < size; i++) {
-//        if (n1->debugindex != n2->debugindex) {
-//            printf("numbers untrue: %i != %i, index: %i\n", n1->debugindex, n2->debugindex, i);
-//        }
-//    }
-//    return 1;
-//}
-
-
 static node *fill_buffer (uint8_t *lsb_buffer, node *coeff_node, size_t n, short *array) {
     for (size_t i = 0; i < n; i++){
+        if (coeff_node->debugindex == 61) {
+            print_debug_linked_list(coeff_node, n);
+        }
         while (coeff_node->coeff_struct.coefficient==0) {
             remove_from_linked_list(coeff_node);
             coeff_node = coeff_node->next;
@@ -184,7 +187,7 @@ static int embed_message_bits(size_t index_to_change, size_t n, node *current_no
 static int embed_message (size_t index_to_change, size_t n, node *current_node, node *debug_node) {
     node *node_to_change = traverse_n_nodes_backward(current_node, n);
     if (node_to_change->debugindex != debug_node->debugindex) {
-//        printf("stop here");
+        printf("not starting where head node is");
     }
 
     node_to_change = traverse_n_nodes_forward(node_to_change, index_to_change);
@@ -195,12 +198,10 @@ static int embed_message (size_t index_to_change, size_t n, node *current_node, 
     else
         coeff->coefficient++;
 
-    if (coeff->coefficient == 0){
+    if (coeff->coefficient == 0)
         return 1;
-    }
-    else {
+    else
         return 0;
-    }
 }
 
 
@@ -209,8 +210,6 @@ int embedMessageIntoCoefficients(const char *message, node *root, size_t list_si
     assert(k <= 64);
 
     size_t n = (1<<k)-1; //n
-
-    print_string_binary(message, k);
 
     if (k < 2){
         return -1;
@@ -221,6 +220,7 @@ int embedMessageIntoCoefficients(const char *message, node *root, size_t list_si
         int current_msgbit_index = 0;
 
         node *current_node = root->next;
+//        print_string_binary(message, k);
 
         printf("embed hash\n");
 
@@ -229,11 +229,13 @@ int embedMessageIntoCoefficients(const char *message, node *root, size_t list_si
             uint8_t lsb_buffer[n];
             memset(lsb_buffer, 0, n*sizeof(uint8_t));
 
+            /// DEBUG IN - keep a node where the current node started
             short coeff_array[n];
             memset(coeff_array, 0, n*sizeof(short));
 
-            /// DEBUG IN - keep a node where the current node started
             node *debug_node = current_node;
+            int debugindex = debug_node->debugindex;
+
             /// DEBUG OUT
 
             current_node = fill_buffer(lsb_buffer, current_node, n, coeff_array);
@@ -247,9 +249,8 @@ int embedMessageIntoCoefficients(const char *message, node *root, size_t list_si
             if (!*message)
                 break;
 
-            printf("%llu ", message_buffer);
-
             if ((message_buffer^hash) == 0) { // change nothing, message already embedded
+                shrinkage_flag = 0;
                 continue;
             }
 
@@ -257,16 +258,16 @@ int embedMessageIntoCoefficients(const char *message, node *root, size_t list_si
             assert(index_to_change >= 0);
             assert(index_to_change <= n);
 
-//            if (current_node->debugindex == 626) {
-//                printf("debug stop");
-//            }
-
             shrinkage_flag = embed_message(index_to_change, n, current_node, debug_node);
             if (shrinkage_flag) {
                 current_node = traverse_n_nodes_backward(current_node, n);
                 if (current_node->debugindex != debug_node->debugindex) {
-//                    printf("stop here");
+                    printf("not traversing back to head node");
                 }
+            }
+
+            if (!shrinkage_flag) {
+                printf("%llu ", message_buffer);
             }
 
             /// DEBUG IN
@@ -282,7 +283,7 @@ int embedMessageIntoCoefficients(const char *message, node *root, size_t list_si
 
                 kbits debughash = hash_coefficient_buffer(coeff_buffer, n);
                 if (message_buffer != debughash) {
-//                    printf("stop here");
+                    printf("not embedding what message is");
                 }
             }
             /// DEBUG OUT
@@ -321,6 +322,7 @@ void extractMessageFromCoefficients(node *root, size_t list_size, size_t output_
         /// DEBUG IN
         short coeff_array[n];
         memset(coeff_array, 0, n*sizeof(short));
+        node *debug_node = current_node;
         current_node = fill_buffer(coeff_buffer, current_node, n, coeff_array);
         /// DEBUG OUT
 

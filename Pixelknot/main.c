@@ -353,7 +353,7 @@ int main(int argc, char * argv[])
         embed(coef_buffers, args.embedMessage, root, usable_size);
         write_DCT(args.outputname, coef_buffers, &outputinfo);
 
-        extract(3488, root, usable_size);
+        extract(1376, root, usable_size);
     }
     else if (args.extractFlag) {
         extract(args.message_size, root, usable_size);

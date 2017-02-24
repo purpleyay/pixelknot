@@ -47,5 +47,4 @@ void print_linked_list(node *root) {
         printf("%i ", current_node->coeff_struct.coefficient);
         current_node = current_node->next;
     }
-    
 }
