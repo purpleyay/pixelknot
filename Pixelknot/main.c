@@ -166,13 +166,6 @@ static void init_usable_coeffs(const JBLOCKARRAY *coef_buffers, struct coefficie
 
                     usable->array[usable->size] = usable_coefficient;
                     usable->size++;
-                    if (usable->size == 30926){
-                        printf("debug stop");
-                    }
-                    if (usable->size == 30953){
-                        printf("debug stop");
-                    }
-
                 }
             }
         }
@@ -312,12 +305,6 @@ static void embed(JBLOCKARRAY *coef_buffers, const char *embedMessage, node *roo
         while (current_node != NULL) {
             JCOEF coefficient = current_node->coeff_struct.coefficient;
             coef_buffers[0][current_node->coeff_struct.row_index][current_node->coeff_struct.column_index][current_node->coeff_struct.block_index] = coefficient;
-//            if (current_node->debugindex >= 30 && current_node->debugindex <= 50) {
-//                printf("index is %i, coefficient is %i\n", current_node->debugindex, current_node->coeff_struct.coefficient);
-//            }
-//            if (current_node->debugindex == 45) {
-//                printf("debug stop");
-//            }
             current_node = current_node->next;
         }
     }
@@ -379,7 +366,7 @@ int main(int argc, char * argv[])
         embed(coef_buffers, args.embedMessage, root, usable_size);
         write_DCT(args.outputname, coef_buffers, &outputinfo);
 
-        extract(3488, root, usable_size);
+        extract(args.message_size, root, usable_size);
 //
 //        printf("extracting from written file now");
 //        // debug from actual picture now

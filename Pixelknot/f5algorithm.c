@@ -103,7 +103,6 @@ static int unequalArray(short *a1, short *a2, size_t size, size_t unequal) {
 static node *fill_buffer_counting (uint8_t *lsb_buffer, node *coeff_node, size_t n, short *array, int *zero_index, node **node_array) {
     for (size_t i = 0; i < n; i++){
         while (coeff_node->coeff_struct.coefficient==0) {
-//            remove_from_linked_list(coeff_node);
             *zero_index+=1;
             coeff_node = coeff_node->next;
         }
@@ -371,10 +370,6 @@ void extractMessageFromCoefficients(node *root, size_t list_size, size_t output_
 
         current_node = fill_buffer(coeff_buffer, current_node, n, coeff_array);
         /// DEBUG OUT
-
-        if (debugindex == 152) {
-            printf("debug stop");
-        }
 
         kbits hash = hash_coefficient_buffer(coeff_buffer, n);
         if (hash_index < 274) {
