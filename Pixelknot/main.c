@@ -156,7 +156,7 @@ static void init_usable_coeffs(const JBLOCKARRAY *coef_buffers, struct coefficie
             for (unsigned int i=0; i<4; i++)
             {
                 JCOEF this_iterations_coefficient = coef_buffers[0][rownum][blocknum][i];
-                if (this_iterations_coefficient){
+                if (this_iterations_coefficient != 0){
                     //make struct of usable coefficient with indices
                     buffer_coefficient usable_coefficient;
                     usable_coefficient.row_index = rownum;
@@ -166,6 +166,13 @@ static void init_usable_coeffs(const JBLOCKARRAY *coef_buffers, struct coefficie
 
                     usable->array[usable->size] = usable_coefficient;
                     usable->size++;
+                    if (usable->size == 30926){
+                        printf("debug stop");
+                    }
+                    if (usable->size == 30953){
+                        printf("debug stop");
+                    }
+
                 }
             }
         }
@@ -205,7 +212,6 @@ static node *instantiate_permutation(unsigned seed, struct coefficients *usable)
     printf("creating linked list...\n");
 
     for (size_t linked_list_index = 0; linked_list_index < usable->size; linked_list_index++) {
-
         //creates linked list of the coefficients, as shuffled by the permutation
         node *new_node = malloc(sizeof(node));
         new_node->coeff_struct = usable->array[permutationArray[linked_list_index]];
@@ -295,20 +301,25 @@ static void write_DCT(const char *outputname, JBLOCKARRAY *coef_buffers, j_compr
 
 static void embed(JBLOCKARRAY *coef_buffers, const char *embedMessage, node *root, size_t root_len)
 {
+
     {
         //going along random walk as produced by the CPRNG, embed/extract message into coefficients using binary hamming matrix code
         embedMessageIntoCoefficients(embedMessage, root, root_len);
-        
+
         //then go back and update JPEG's coefficients with the changed coefficients accordingly, using the indices data stored in the coefficient struct
         printf("changing coefficients\n");
         node *current_node = root->next;
         while (current_node != NULL) {
             JCOEF coefficient = current_node->coeff_struct.coefficient;
             coef_buffers[0][current_node->coeff_struct.row_index][current_node->coeff_struct.column_index][current_node->coeff_struct.block_index] = coefficient;
+//            if (current_node->debugindex >= 30 && current_node->debugindex <= 50) {
+//                printf("index is %i, coefficient is %i\n", current_node->debugindex, current_node->coeff_struct.coefficient);
+//            }
+//            if (current_node->debugindex == 45) {
+//                printf("debug stop");
+//            }
             current_node = current_node->next;
         }
-
-        printf("done embedding\n");
     }
 }
 
@@ -322,6 +333,7 @@ static void extract(size_t message_size, node *root, size_t usable_size)
             current_node = current_node->next;
             j++;
         }
+        printf("\n\n");
     }
 
     printf("began extracting...\n");
@@ -334,6 +346,20 @@ static void extract(size_t message_size, node *root, size_t usable_size)
     printf("extractedMessage is %s\n", extractedMessage);
     free(extractedMessage);
 }
+
+static void debugextract(size_t message_size, node *picture_root, node *other_root, size_t usable_size)
+{
+    printf("began extracting...\n");
+    char *extractedMessage = malloc(message_size + 1);
+    if (!extractedMessage) {
+        perror("malloc");
+        exit(1);
+    }
+    debug_extract(other_root, picture_root, usable_size, message_size, extractedMessage);
+    printf("extractedMessage is %s\n", extractedMessage);
+    free(extractedMessage);
+}
+
 
 int main(int argc, char * argv[])
 {
@@ -353,7 +379,20 @@ int main(int argc, char * argv[])
         embed(coef_buffers, args.embedMessage, root, usable_size);
         write_DCT(args.outputname, coef_buffers, &outputinfo);
 
-        extract(1376, root, usable_size);
+        extract(3488, root, usable_size);
+//
+//        printf("extracting from written file now");
+//        // debug from actual picture now
+//
+//        struct jpeg_compress_struct outputinfo2;
+//        JBLOCKARRAY coef_buffers2[MAX_COMPONENTS];
+//
+//        char *debugname = "/Users/purpleprincess/Code/C/Pixelknot/Pixelknot/debug.jpg";
+//        setup_output(debugname, &outputinfo2);
+//        read_DCT(args.outputname, coef_buffers2, &outputinfo2);
+//        node *picture_root;
+//        size_t usable_size = make_linked_list(coef_buffers2, seed, &picture_root);
+//        debugextract(3488, picture_root, root, usable_size);
     }
     else if (args.extractFlag) {
         extract(args.message_size, root, usable_size);

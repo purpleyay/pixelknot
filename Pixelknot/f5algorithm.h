@@ -13,5 +13,7 @@
 
 int embedMessageIntoCoefficients(const char *message, node *rootOfUsableCoefficientBuffer, size_t list_size);
 void extractMessageFromCoefficients(node *rootOfUsableCoefficientBuffer, size_t list_size, size_t message_size, char *extracted_message_string);
+void debug_extract(node *debug_root, node *root, size_t list_size, size_t output_buffer_size, char *output_buffer);
+
 
 #endif

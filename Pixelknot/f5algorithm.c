@@ -100,11 +100,29 @@ static int unequalArray(short *a1, short *a2, size_t size, size_t unequal) {
     return 1;
 }
 
+static node *fill_buffer_counting (uint8_t *lsb_buffer, node *coeff_node, size_t n, short *array, int *zero_index, node **node_array) {
+    for (size_t i = 0; i < n; i++){
+        while (coeff_node->coeff_struct.coefficient==0) {
+//            remove_from_linked_list(coeff_node);
+            *zero_index+=1;
+            coeff_node = coeff_node->next;
+        }
+
+        lsb_buffer[i] = (coeff_node->coeff_struct.coefficient & 1);
+        array[i] = coeff_node->coeff_struct.coefficient;
+
+        if (coeff_node->next == NULL) {
+            printf("sorry, you ran out of coefficients");
+            assert(coeff_node->next != NULL);
+        }
+        node_array[i] = coeff_node;
+        coeff_node = coeff_node->next;
+    }
+    return coeff_node;
+}
+
 static node *fill_buffer (uint8_t *lsb_buffer, node *coeff_node, size_t n, short *array) {
     for (size_t i = 0; i < n; i++){
-        if (coeff_node->debugindex == 61) {
-            print_debug_linked_list(coeff_node, n);
-        }
         while (coeff_node->coeff_struct.coefficient==0) {
             remove_from_linked_list(coeff_node);
             coeff_node = coeff_node->next;
@@ -121,6 +139,7 @@ static node *fill_buffer (uint8_t *lsb_buffer, node *coeff_node, size_t n, short
     }
     return coeff_node;
 }
+
 
 //guys guys guys, the math behind this part is so fucking cool
 //i wish the implementation didn't obscure it so much
@@ -184,14 +203,14 @@ static int embed_message_bits(size_t index_to_change, size_t n, node *current_no
     }
 }
 
-static int embed_message (size_t index_to_change, size_t n, node *current_node, node *debug_node) {
-    node *node_to_change = traverse_n_nodes_backward(current_node, n);
-    if (node_to_change->debugindex != debug_node->debugindex) {
-        printf("not starting where head node is");
-    }
+static int embed_message (size_t index_to_change, size_t n, node **node_array, node *debug_node) {
+//    node *node_to_change = traverse_n_nodes_backward(current_node, n);
+//    if (node_to_change->debugindex != debug_node->debugindex) {
+////        printf("not starting where head node is");
+//    }
 
-    node_to_change = traverse_n_nodes_forward(node_to_change, index_to_change);
-
+//    node_to_change = traverse_n_nodes_forward(node_to_change, index_to_change);
+    node *node_to_change = node_array[index_to_change];
     buffer_coefficient *coeff = &node_to_change->coeff_struct;
     if (coeff->coefficient > 0)
         coeff->coefficient--;
@@ -204,6 +223,11 @@ static int embed_message (size_t index_to_change, size_t n, node *current_node, 
         return 0;
 }
 
+void printArray(short *array, size_t n) {
+    for (int i = 0; i<n; i++) {
+        printf("%i ", array[i]);
+    }
+}
 
 int embedMessageIntoCoefficients(const char *message, node *root, size_t list_size){
     size_t k = get_message_partition_size(strlen(message)*8, list_size); //k
@@ -220,11 +244,13 @@ int embedMessageIntoCoefficients(const char *message, node *root, size_t list_si
         int current_msgbit_index = 0;
 
         node *current_node = root->next;
+        node **node_array = malloc(n * sizeof(node*));
 //        print_string_binary(message, k);
 
         printf("embed hash\n");
 
         while (*message != '\0' && current_node) {
+            int zero_index = 0;
 
             uint8_t lsb_buffer[n];
             memset(lsb_buffer, 0, n*sizeof(uint8_t));
@@ -238,8 +264,16 @@ int embedMessageIntoCoefficients(const char *message, node *root, size_t list_si
 
             /// DEBUG OUT
 
-            current_node = fill_buffer(lsb_buffer, current_node, n, coeff_array);
+            current_node = fill_buffer_counting(lsb_buffer, current_node, n, coeff_array, &zero_index, node_array);
+//            current_node = fill_buffer(lsb_buffer, current_node, n, coeff_array);
+
             kbits hash = hash_coefficient_buffer(lsb_buffer, n);
+
+//            printf("\n");
+//            for (int i = 0; i<n; i++) {
+//                printf("%i ", coeff_array[i]);
+//            }
+//            printf("\n");
 
             //if shrinkage is true, then the correct bits will already be the message_buffer variable
             if (!shrinkage_flag) {
@@ -258,11 +292,18 @@ int embedMessageIntoCoefficients(const char *message, node *root, size_t list_si
             assert(index_to_change >= 0);
             assert(index_to_change <= n);
 
-            shrinkage_flag = embed_message(index_to_change, n, current_node, debug_node);
+
+            shrinkage_flag = embed_message(index_to_change, n, node_array, debug_node);
+            if (debugindex == 395) {
+                for (int i = 0; i<n; i++) {
+                    printf("%i ", coeff_array[i]);
+                }
+                printf("/n");
+            }
             if (shrinkage_flag) {
-                current_node = traverse_n_nodes_backward(current_node, n);
+                current_node = traverse_n_nodes_backward(current_node, n+zero_index);
                 if (current_node->debugindex != debug_node->debugindex) {
-                    printf("not traversing back to head node");
+//                    printf("not traversing back to head node");
                 }
             }
 
@@ -278,7 +319,7 @@ int embedMessageIntoCoefficients(const char *message, node *root, size_t list_si
 
                 fill_buffer(coeff_buffer, debug_node, n, debug_array);
                 if (!unequalArray(coeff_array, debug_array, n, index_to_change)) {
-                    printf("4");
+                    printf("arrays are not equal");
                 }
 
                 kbits debughash = hash_coefficient_buffer(coeff_buffer, n);
@@ -315,18 +356,34 @@ void extractMessageFromCoefficients(node *root, size_t list_size, size_t output_
     uint8_t coeff_buffer[n]; //buffer to store n bits of codeword
 
     printf("extract hash\n");
+
+    int correct_hash[274] = {0, 10, 5, 1, 5, 5, 4, 9, 4, 3, 4, 11, 5, 3, 4, 1, 4, 14, 4, 4, 2, 0, 7, 9, 6, 5, 6, 1, 7, 2, 7, 3, 2, 0, 7, 4, 6, 8, 6, 1, 7, 4, 2, 0, 7, 7, 6, 8, 6, 9, 7, 2, 6, 12, 2, 0, 6, 13, 6, 5, 2, 0, 4, 9, 2, 0, 6, 11, 6, 14, 6, 15, 7, 7, 2, 0, 6, 14, 6, 15, 7, 4, 2, 0, 7, 7, 6, 8, 6, 9, 7, 4, 6, 8, 6, 5, 7, 2, 2, 12, 0, 9, 2, 0, 0, 10, 5, 9, 6, 15, 7, 5, 7, 2, 2, 0, 7, 3, 6, 3, 6, 8, 6, 5, 6, 13, 6, 5, 7, 3, 2, 12, 2, 0, 7, 0, 6, 15, 6, 12, 6, 9, 7, 4, 6, 9, 6, 3, 7, 3, 2, 12, 2, 0, 6, 6, 6, 1, 6, 9, 6, 12, 14, 2, 8, 0, 9, 4, 6, 12, 6, 9, 6, 14, 6, 5, 7, 3, 2, 0, 6, 7, 6, 9, 7, 6, 6, 5, 2, 0, 7, 7, 6, 1, 7, 9, 14, 2, 8, 0, 9, 4, 7, 3, 7, 5, 6, 2, 7, 3, 7, 4, 6, 1, 6, 14, 6, 3, 6, 5, 7, 3, 2, 0, 6, 13, 6, 15, 6, 3, 6, 11, 2, 0, 6, 1, 6, 14, 6, 4, 2, 0, 6, 5, 6, 12, 7, 5, 6, 4, 6, 5, 2, 0, 6, 13, 6, 5, 3, 11, 0, 9, 2, 0, 0, 10, 4, 15, 6, 14, 6, 12, 7, 9};
+    int hash_index = 0;
     while (message_index < message_size_in_bytes){
-        
+
 //        current_node = fill_coeff_buffer_with_n_coefficients_lsb(coeff_buffer, current_node, n);
 
         /// DEBUG IN
         short coeff_array[n];
         memset(coeff_array, 0, n*sizeof(short));
         node *debug_node = current_node;
+        int debugindex = debug_node->debugindex;
+
         current_node = fill_buffer(coeff_buffer, current_node, n, coeff_array);
         /// DEBUG OUT
 
+        if (debugindex == 152) {
+            printf("debug stop");
+        }
+
         kbits hash = hash_coefficient_buffer(coeff_buffer, n);
+        if (hash_index < 274) {
+            if (hash != correct_hash[hash_index]) {
+                printf("hash isn't correct");
+            }
+            hash_index++;
+        }
+
         printf("%llu ", hash);
 
         //add each bit from k-size hash, starting from the left into current index of extracted message array
@@ -350,3 +407,72 @@ void extractMessageFromCoefficients(node *root, size_t list_size, size_t output_
     } //end while (message_index < message_length)
 
 }// end extraction
+
+void debug_extract(node *debug_root, node *picture_root, size_t list_size, size_t output_buffer_size, char *output_buffer) {
+    size_t k = get_message_partition_size(output_buffer_size, list_size); // k
+    size_t message_size_in_bytes = output_buffer_size/8;
+
+    size_t message_index = 0; //how many bytes along have been extracted
+    int message_bit_index = 0; //how many bits along (relative to current byte) have been extracted
+
+    //calculate the code word length n = 2^k - 1
+    size_t n = (1<<k)-1;  //let this also be known as the variable n
+    node *current_node = picture_root->next; //mark how far along ucb list we are.
+    node *debug_node = debug_root->next; //mark how far along ucb list we are.
+
+    uint8_t coeff_buffer[n]; //buffer to store n bits of codeword
+    uint8_t debug_buffer[n]; //buffer to store n bits of codeword
+
+    printf("extract hash\n");
+    while (message_index < message_size_in_bytes){
+        int referenceindex = current_node->debugindex; //for printing
+        node *referencenode = current_node; //for printing
+
+        if (current_node->coeff_struct.coefficient != debug_node->coeff_struct.coefficient) {
+            printf("debug stop");
+        }
+
+        /// DEBUG IN
+        short coeff_array[n];
+        memset(coeff_array, 0, n*sizeof(short));
+        current_node = fill_buffer(coeff_buffer, current_node, n, coeff_array);
+        kbits hash = hash_coefficient_buffer(coeff_buffer, n);
+        printf("%llu ", hash);
+
+        short debug_array[n];
+        memset(debug_array, 0, n*sizeof(short));
+        debug_node = fill_buffer(debug_buffer, debug_node, n, debug_array);
+        kbits debughash = hash_coefficient_buffer(debug_buffer, n);
+
+        if (!equalArrays(coeff_array, debug_array, n)) {
+            printf("stop here");
+        }
+        if (hash != debughash) {
+            printf("stop here");
+        }
+        /// DEBUG OUT
+
+
+
+        //add each bit from k-size hash, starting from the left into current index of extracted message array
+        for (size_t current_hash_bit = 0; current_hash_bit < k; current_hash_bit++){
+            if (message_bit_index > 7){ //we reach end of byte, so increment to next byte of allocated array
+                message_bit_index = 0;
+                message_index++;
+                output_buffer[message_index] = 0;
+            }
+
+            //get left-most bit from hash
+            kbits bitmask = 1 << ((kbits) k - current_hash_bit - 1);
+            int message_bit = (hash & bitmask) ? 1 : 0;
+
+            //add bit to message's current byte
+            if (message_bit) output_buffer[message_index] |= (1 << (7-message_bit_index));
+            message_bit_index++;
+
+        }
+
+    } //end while (message_index < message_length)
+    
+}// end extraction
+
