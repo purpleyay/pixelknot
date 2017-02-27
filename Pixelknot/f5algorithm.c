@@ -355,9 +355,6 @@ void extractMessageFromCoefficients(node *root, size_t list_size, size_t output_
     uint8_t coeff_buffer[n]; //buffer to store n bits of codeword
 
     printf("extract hash\n");
-
-    int correct_hash[274] = {0, 10, 5, 1, 5, 5, 4, 9, 4, 3, 4, 11, 5, 3, 4, 1, 4, 14, 4, 4, 2, 0, 7, 9, 6, 5, 6, 1, 7, 2, 7, 3, 2, 0, 7, 4, 6, 8, 6, 1, 7, 4, 2, 0, 7, 7, 6, 8, 6, 9, 7, 2, 6, 12, 2, 0, 6, 13, 6, 5, 2, 0, 4, 9, 2, 0, 6, 11, 6, 14, 6, 15, 7, 7, 2, 0, 6, 14, 6, 15, 7, 4, 2, 0, 7, 7, 6, 8, 6, 9, 7, 4, 6, 8, 6, 5, 7, 2, 2, 12, 0, 9, 2, 0, 0, 10, 5, 9, 6, 15, 7, 5, 7, 2, 2, 0, 7, 3, 6, 3, 6, 8, 6, 5, 6, 13, 6, 5, 7, 3, 2, 12, 2, 0, 7, 0, 6, 15, 6, 12, 6, 9, 7, 4, 6, 9, 6, 3, 7, 3, 2, 12, 2, 0, 6, 6, 6, 1, 6, 9, 6, 12, 14, 2, 8, 0, 9, 4, 6, 12, 6, 9, 6, 14, 6, 5, 7, 3, 2, 0, 6, 7, 6, 9, 7, 6, 6, 5, 2, 0, 7, 7, 6, 1, 7, 9, 14, 2, 8, 0, 9, 4, 7, 3, 7, 5, 6, 2, 7, 3, 7, 4, 6, 1, 6, 14, 6, 3, 6, 5, 7, 3, 2, 0, 6, 13, 6, 15, 6, 3, 6, 11, 2, 0, 6, 1, 6, 14, 6, 4, 2, 0, 6, 5, 6, 12, 7, 5, 6, 4, 6, 5, 2, 0, 6, 13, 6, 5, 3, 11, 0, 9, 2, 0, 0, 10, 4, 15, 6, 14, 6, 12, 7, 9};
-    int hash_index = 0;
     while (message_index < message_size_in_bytes){
 
 //        current_node = fill_coeff_buffer_with_n_coefficients_lsb(coeff_buffer, current_node, n);
@@ -372,12 +369,6 @@ void extractMessageFromCoefficients(node *root, size_t list_size, size_t output_
         /// DEBUG OUT
 
         kbits hash = hash_coefficient_buffer(coeff_buffer, n);
-        if (hash_index < 274) {
-            if (hash != correct_hash[hash_index]) {
-                printf("hash isn't correct");
-            }
-            hash_index++;
-        }
 
         printf("%llu ", hash);
 
@@ -423,9 +414,9 @@ void debug_extract(node *debug_root, node *picture_root, size_t list_size, size_
         int referenceindex = current_node->debugindex; //for printing
         node *referencenode = current_node; //for printing
 
-        if (current_node->coeff_struct.coefficient != debug_node->coeff_struct.coefficient) {
-            printf("debug stop");
-        }
+//        if (current_node->coeff_struct.coefficient != debug_node->coeff_struct.coefficient) {
+//            printf("debug stop");
+//        }
 
         /// DEBUG IN
         short coeff_array[n];
@@ -439,12 +430,12 @@ void debug_extract(node *debug_root, node *picture_root, size_t list_size, size_
         debug_node = fill_buffer(debug_buffer, debug_node, n, debug_array);
         kbits debughash = hash_coefficient_buffer(debug_buffer, n);
 
-        if (!equalArrays(coeff_array, debug_array, n)) {
-            printf("stop here");
-        }
-        if (hash != debughash) {
-            printf("stop here");
-        }
+//        if (!equalArrays(coeff_array, debug_array, n)) {
+//            printf("stop here");
+//        }
+//        if (hash != debughash) {
+//            printf("stop here");
+//        }
         /// DEBUG OUT
 
 

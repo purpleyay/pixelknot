@@ -189,13 +189,16 @@ static node *instantiate_permutation(unsigned seed, struct coefficients *usable)
     size_t randomIndex, temp;
     size_t maxRandom = usable->size;
     for (size_t index = 0; index < usable->size; index++) {
-
         randomIndex = ((unsigned int) rand()) % maxRandom--;
         temp = permutationArray[randomIndex];
         permutationArray[randomIndex] = permutationArray[index];
         permutationArray[index] = temp;
     }
-    
+
+    for (int j = 0; j < 30; j++) {
+        printf("%zu ",  permutationArray[j]);
+    }
+
     printf("done permuting\n");
     
     node *root = malloc(sizeof(node));
@@ -367,19 +370,19 @@ int main(int argc, char * argv[])
         write_DCT(args.outputname, coef_buffers, &outputinfo);
 
         extract(args.message_size, root, usable_size);
-//
-//        printf("extracting from written file now");
-//        // debug from actual picture now
-//
-//        struct jpeg_compress_struct outputinfo2;
-//        JBLOCKARRAY coef_buffers2[MAX_COMPONENTS];
-//
-//        char *debugname = "/Users/purpleprincess/Code/C/Pixelknot/Pixelknot/debug.jpg";
-//        setup_output(debugname, &outputinfo2);
-//        read_DCT(args.outputname, coef_buffers2, &outputinfo2);
-//        node *picture_root;
-//        size_t usable_size = make_linked_list(coef_buffers2, seed, &picture_root);
-//        debugextract(3488, picture_root, root, usable_size);
+
+        printf("extracting from written file now");
+        // debug from actual picture now
+
+        struct jpeg_compress_struct outputinfo2;
+        JBLOCKARRAY coef_buffers2[MAX_COMPONENTS];
+
+        char *debugname = "/Users/purpleprincess/Code/C/Pixelknot/Pixelknot/debug.jpg";
+        setup_output(debugname, &outputinfo2);
+        read_DCT(args.outputname, coef_buffers2, &outputinfo2);
+        node *picture_root;
+        size_t usable_size = make_linked_list(coef_buffers2, seed, &picture_root);
+        debugextract(args.message_size, picture_root, root, usable_size);
     }
     else if (args.extractFlag) {
         extract(args.message_size, root, usable_size);
