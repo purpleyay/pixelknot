@@ -415,7 +415,7 @@ void debug_extract(node *debug_root, node *picture_root, size_t list_size, size_
         node *referencenode = current_node; //for printing
 
 //        if (current_node->coeff_struct.coefficient != debug_node->coeff_struct.coefficient) {
-//            printf("debug stop");
+//            printf("index %i is not equal: %i != %i", current_node->debug_index, current_node->coeff_struct.coefficient, debug_node->coeff_struct.coefficient);
 //        }
 
         /// DEBUG IN
