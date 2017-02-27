@@ -4,6 +4,16 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>Debug.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>3</integer>
+		</dict>
+		<key>Extract.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>2</integer>
+		</dict>
 		<key>Pixelknot.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -18,6 +28,11 @@
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
 		<key>1B6971B61E54E93F00AD54C1</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1B6CC91E1E64CE49001DA699</key>
 		<dict>
 			<key>primary</key>
 			<true/>

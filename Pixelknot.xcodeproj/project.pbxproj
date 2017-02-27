@@ -12,11 +12,23 @@
 		1B6971CC1E54E96B00AD54C1 /* node.c in Sources */ = {isa = PBXBuildFile; fileRef = 1B6971C61E54E96B00AD54C1 /* node.c */; };
 		1B6971D11E54EB5000AD54C1 /* jpeglib.h in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B6971D01E54EB5000AD54C1 /* jpeglib.h */; };
 		1B6971D51E54EBAA00AD54C1 /* libjpeg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B6971D41E54EBAA00AD54C1 /* libjpeg.a */; };
+		1B6CC9261E64CE6B001DA699 /* debugging.c in Sources */ = {isa = PBXBuildFile; fileRef = 1B6CC9191E64CE33001DA699 /* debugging.c */; };
+		1B6CC9271E64CEC6001DA699 /* jpeglib.h in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B6971D01E54EB5000AD54C1 /* jpeglib.h */; };
+		1B6CC9281E64CEC6001DA699 /* libjpeg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B6971D41E54EBAA00AD54C1 /* libjpeg.a */; };
 		1B9183EA1E550D5600D91799 /* f5Tests.c in Sources */ = {isa = PBXBuildFile; fileRef = 1B9183DB1E550AA500D91799 /* f5Tests.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		1B6971B51E54E93F00AD54C1 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+		1B6CC91D1E64CE49001DA699 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
@@ -47,6 +59,9 @@
 		1B6971D01E54EB5000AD54C1 /* jpeglib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = jpeglib.h; path = ../../../../../usr/local/Cellar/jpeg/8d/include/jpeglib.h; sourceTree = "<group>"; };
 		1B6971D21E54EB8000AD54C1 /* cjpeg */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = cjpeg; path = ../../../../../usr/local/Cellar/jpeg/8d/bin/cjpeg; sourceTree = "<group>"; };
 		1B6971D41E54EBAA00AD54C1 /* libjpeg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjpeg.a; path = ../../../../../usr/local/Cellar/jpeg/8d/lib/libjpeg.a; sourceTree = "<group>"; };
+		1B6CC9191E64CE33001DA699 /* debugging.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = debugging.c; sourceTree = "<group>"; };
+		1B6CC91F1E64CE49001DA699 /* Debug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Debug; sourceTree = BUILT_PRODUCTS_DIR; };
+		1B6CC9211E64CE49001DA699 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		1B9183DB1E550AA500D91799 /* f5Tests.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = f5Tests.c; sourceTree = "<group>"; };
 		1B9183DC1E550AA500D91799 /* f5Tests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = f5Tests.h; sourceTree = "<group>"; };
 		1B9183DE1E550CC000D91799 /* minunit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = minunit.h; sourceTree = "<group>"; };
@@ -65,6 +80,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		1B6CC91C1E64CE49001DA699 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1B6CC9271E64CEC6001DA699 /* jpeglib.h in Frameworks */,
+				1B6CC9281E64CEC6001DA699 /* libjpeg.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		1B9183E01E550CE300D91799 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -80,6 +104,7 @@
 			children = (
 				1B6971B91E54E93F00AD54C1 /* Pixelknot */,
 				1B9183E41E550CE300D91799 /* Tests */,
+				1B6CC9201E64CE49001DA699 /* Debug */,
 				1B6971B81E54E93F00AD54C1 /* Products */,
 				1B6971CD1E54EB1000AD54C1 /* Frameworks */,
 			);
@@ -90,6 +115,7 @@
 			children = (
 				1B6971B71E54E93F00AD54C1 /* Pixelknot */,
 				1B9183E31E550CE300D91799 /* Tests */,
+				1B6CC91F1E64CE49001DA699 /* Debug */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -106,6 +132,7 @@
 				1B9183DC1E550AA500D91799 /* f5Tests.h */,
 				1B9183DE1E550CC000D91799 /* minunit.h */,
 				1B9183EC1E551C4F00D91799 /* in.jpg */,
+				1B6CC9191E64CE33001DA699 /* debugging.c */,
 			);
 			path = Pixelknot;
 			sourceTree = "<group>";
@@ -119,6 +146,14 @@
 				1B6971CE1E54EB1000AD54C1 /* libjpeg.8.dylib */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		1B6CC9201E64CE49001DA699 /* Debug */ = {
+			isa = PBXGroup;
+			children = (
+				1B6CC9211E64CE49001DA699 /* main.c */,
+			);
+			path = Debug;
 			sourceTree = "<group>";
 		};
 		1B9183E41E550CE300D91799 /* Tests */ = {
@@ -147,6 +182,23 @@
 			name = Pixelknot;
 			productName = Pixelknot;
 			productReference = 1B6971B71E54E93F00AD54C1 /* Pixelknot */;
+			productType = "com.apple.product-type.tool";
+		};
+		1B6CC91E1E64CE49001DA699 /* Debug */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1B6CC9231E64CE49001DA699 /* Build configuration list for PBXNativeTarget "Debug" */;
+			buildPhases = (
+				1B6CC91B1E64CE49001DA699 /* Sources */,
+				1B6CC91C1E64CE49001DA699 /* Frameworks */,
+				1B6CC91D1E64CE49001DA699 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Debug;
+			productName = Debug;
+			productReference = 1B6CC91F1E64CE49001DA699 /* Debug */;
 			productType = "com.apple.product-type.tool";
 		};
 		1B9183E21E550CE300D91799 /* Tests */ = {
@@ -180,6 +232,11 @@
 						DevelopmentTeam = RSZFZZDVBX;
 						ProvisioningStyle = Automatic;
 					};
+					1B6CC91E1E64CE49001DA699 = {
+						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = RSZFZZDVBX;
+						ProvisioningStyle = Automatic;
+					};
 					1B9183E21E550CE300D91799 = {
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = RSZFZZDVBX;
@@ -201,6 +258,7 @@
 			targets = (
 				1B6971B61E54E93F00AD54C1 /* Pixelknot */,
 				1B9183E21E550CE300D91799 /* Tests */,
+				1B6CC91E1E64CE49001DA699 /* Debug */,
 			);
 		};
 /* End PBXProject section */
@@ -213,6 +271,14 @@
 				1B6971CC1E54E96B00AD54C1 /* node.c in Sources */,
 				1B6971CB1E54E96B00AD54C1 /* main.c in Sources */,
 				1B6971CA1E54E96B00AD54C1 /* f5algorithm.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1B6CC91B1E64CE49001DA699 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1B6CC9261E64CE6B001DA699 /* debugging.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -340,6 +406,30 @@
 			};
 			name = Release;
 		};
+		1B6CC9241E64CE49001DA699 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = RSZFZZDVBX;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/jpeg/8d/lib,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		1B6CC9251E64CE49001DA699 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = RSZFZZDVBX;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/jpeg/8d/lib,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		1B9183E81E550CE300D91799 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -377,6 +467,14 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		1B6CC9231E64CE49001DA699 /* Build configuration list for PBXNativeTarget "Debug" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1B6CC9241E64CE49001DA699 /* Debug */,
+				1B6CC9251E64CE49001DA699 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		1B9183E71E550CE300D91799 /* Build configuration list for PBXNativeTarget "Tests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -384,6 +482,7 @@
 				1B9183E91E550CE300D91799 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

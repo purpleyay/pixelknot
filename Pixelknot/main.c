@@ -224,7 +224,67 @@ static node *instantiate_permutation(unsigned seed, struct coefficients *usable)
         printf("%i ", current_node->coeff_struct.coefficient);
         current_node = current_node->next;
     }
-    
+
+
+    //print_linked_list(root);
+    return root;
+}
+
+static size_t *permutationArray(unsigned seed, size_t size) {
+    srand(seed);
+
+    //instantiate a permutation of DCT coefficients, using Fisher-Yates algorithm
+    size_t *permutationArray = malloc(size * sizeof(size_t));
+
+    for (size_t index = 0; index < size; index++) {
+        permutationArray[index]=index;
+    }
+
+    printf("running permutation\n");
+    size_t randomIndex, temp;
+    size_t maxRandom = size;
+    for (size_t index = 0; index < size; index++) {
+        randomIndex = ((unsigned int) rand()) % maxRandom--;
+        temp = permutationArray[randomIndex];
+        permutationArray[randomIndex] = permutationArray[index];
+        permutationArray[index] = temp;
+    }
+
+    printf("permutation array is ");
+    for (size_t i = 0; i < 15; i++) {
+        printf("%zu ", permutationArray[i]);
+    }
+    printf("done permuting\n");
+    return permutationArray;
+}
+
+static node *permutate_coeffs(size_t *permutationArray, struct coefficients *usable)
+{
+    node *root = malloc(sizeof(node));
+    root->next = NULL;
+    node *current_node = root;
+    int debug_i = 0;
+
+    printf("creating linked list...\n");
+
+    for (size_t linked_list_index = 0; linked_list_index < usable->size; linked_list_index++) {
+        //creates linked list of the coefficients, as shuffled by the permutation
+        node *new_node = malloc(sizeof(node));
+        new_node->coeff_struct = usable->array[permutationArray[linked_list_index]];
+        new_node->debugindex = debug_i;
+        debug_i++;
+        add_to_linked_list(new_node, current_node);
+        current_node = current_node->next;
+    }
+
+    printf("done creating linked list\n");
+
+    current_node = root->next;
+    for (int j = 0; j < 30; j++) {
+        printf("%i ", current_node->coeff_struct.coefficient);
+        current_node = current_node->next;
+    }
+
     //print_linked_list(root);
     return root;
 }
@@ -237,15 +297,40 @@ static size_t make_linked_list(const JBLOCKARRAY *coef_buffers, unsigned int see
         perror("malloc");
         exit(EXIT_FAILURE);
     }
-    
+
     init_usable_coeffs(coef_buffers, &usable);
     printf("\n\n");
     printf("buffer size is %i\n", (int) usable.size);
+
     *root = instantiate_permutation(seed, &usable);
 
     free(usable.array);
     return usable.size;
 }
+
+static size_t linked_list(const JBLOCKARRAY *coef_buffers, unsigned int seed, node **root, size_t **permutation_array)
+{
+    struct coefficients usable;
+    usable.array = malloc(sizeof(buffer_coefficient)*height_in_blocks[0]*width_in_blocks[0]*4);
+    if (!usable.array) {
+        perror("malloc");
+        exit(EXIT_FAILURE);
+    }
+
+    init_usable_coeffs(coef_buffers, &usable);
+    printf("\n\n");
+    printf("buffer size is %i\n", (int) usable.size);
+
+    if (!*permutation_array) {
+        *permutation_array = permutationArray(seed, usable.size);
+    }
+    *root = permutate_coeffs(*permutation_array , &usable);
+
+    free(usable.array);
+    return usable.size;
+}
+
+
 
 static FILE *setup_output(const char *outputname, j_compress_ptr outputinfo)
 {
@@ -290,7 +375,7 @@ static void write_DCT(const char *outputname, JBLOCKARRAY *coef_buffers, j_compr
 
         /* All done. */
         printf("New DCT coefficients successfully written to %s\n\n", outputname);
-//        exit(jerr.num_warnings ? EXIT_FAILURE : EXIT_SUCCESS);
+        exit(jerr.num_warnings ? EXIT_FAILURE : EXIT_SUCCESS);
 
     }
 }
@@ -362,8 +447,11 @@ int main(int argc, char * argv[])
     FILE *output = setup_output(args.outputname, &outputinfo);
     read_DCT(args.inputname, coef_buffers, &outputinfo);
     unsigned int seed = (unsigned) strtoul(args.userPassword, NULL, 10);
-    node *root;
-    size_t usable_size = make_linked_list(coef_buffers, seed, &root);
+    node *root = NULL;
+    size_t *permutation_array = NULL;
+    size_t usable_size = linked_list(coef_buffers, seed, &root, &permutation_array);
+
+//    size_t usable_size = make_linked_list(coef_buffers, seed, &root);
 
     if (args.embedFlag) {
         embed(coef_buffers, args.embedMessage, root, usable_size);
@@ -381,7 +469,8 @@ int main(int argc, char * argv[])
         setup_output(debugname, &outputinfo2);
         read_DCT(args.outputname, coef_buffers2, &outputinfo2);
         node *picture_root;
-        size_t usable_size = make_linked_list(coef_buffers2, seed, &picture_root);
+//        size_t usable_size = make_linked_list(coef_buffers2, seed, &picture_root);
+        size_t usable_size = linked_list(coef_buffers2, seed, &picture_root, &permutation_array);
         debugextract(args.message_size, picture_root, root, usable_size);
     }
     else if (args.extractFlag) {

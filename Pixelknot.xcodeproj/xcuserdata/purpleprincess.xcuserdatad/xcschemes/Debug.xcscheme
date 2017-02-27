@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "1B6971B61E54E93F00AD54C1"
-               BuildableName = "Pixelknot"
-               BlueprintName = "Pixelknot"
+               BlueprintIdentifier = "1B6CC91E1E64CE49001DA699"
+               BuildableName = "Debug"
+               BlueprintName = "Debug"
                ReferencedContainer = "container:Pixelknot.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -32,9 +32,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "1B6971B61E54E93F00AD54C1"
-            BuildableName = "Pixelknot"
-            BlueprintName = "Pixelknot"
+            BlueprintIdentifier = "1B6CC91E1E64CE49001DA699"
+            BuildableName = "Debug"
+            BlueprintName = "Debug"
             ReferencedContainer = "container:Pixelknot.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -56,34 +56,12 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "1B6971B61E54E93F00AD54C1"
-            BuildableName = "Pixelknot"
-            BlueprintName = "Pixelknot"
+            BlueprintIdentifier = "1B6CC91E1E64CE49001DA699"
+            BuildableName = "Debug"
+            BlueprintName = "Debug"
             ReferencedContainer = "container:Pixelknot.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <CommandLineArguments>
-         <CommandLineArgument
-            argument = "/Users/purpleprincess/Code/C/Pixelknot/Pixelknot/in.jpg"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "/Users/purpleprincess/Code/C/Pixelknot/Pixelknot/out.jpg"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "e"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "password"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "&quot;&#10;QUICKSAND years that whirl me I know not whither,&#9; &#10;Your schemes, politics, fail&#x2014;lines give way&#x2014;substances mock and elude me;&#9; &#10;Only the theme I sing, the great and strong-possess&#x2019;d Soul, eludes not;&#9; &#10;One&#x2019;s-self must never give way&#x2014;that is the final substance&#x2014;that out of all is sure;&#9; &#10;Out of politics, triumphs, battles, life&#x2014;what at last finally remains?&#9;         5&#10;When shows break up, what but One&#x2019;s-Self is sure?&quot;"
-            isEnabled = "YES">
-         </CommandLineArgument>
-      </CommandLineArguments>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -97,9 +75,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "1B6971B61E54E93F00AD54C1"
-            BuildableName = "Pixelknot"
-            BlueprintName = "Pixelknot"
+            BlueprintIdentifier = "1B6CC91E1E64CE49001DA699"
+            BuildableName = "Debug"
+            BlueprintName = "Debug"
             ReferencedContainer = "container:Pixelknot.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
