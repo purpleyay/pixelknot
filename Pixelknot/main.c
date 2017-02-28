@@ -57,7 +57,7 @@ static void parse_arguments(int argc, char *argv[], struct arguments *args)
 	}
 	else if (args->extractFlag) {
         args->userPassword = argv[4];
-        args->message_size = 88;
+        args->message_size = 3480;
         
         printf("We are extracting \ninput pic is %s \nmessageSize is %ld \nuserPassword is %s \n", args->inputname, args->message_size, args->userPassword);
 	}
@@ -136,8 +136,8 @@ static void read_DCT(const char *inputname, JBLOCKARRAY *coef_buffers, j_compres
         }
     }
 
-    jpeg_finish_decompress(&inputinfo);
-    jpeg_destroy_decompress(&inputinfo);
+//    jpeg_finish_decompress(&inputinfo);
+//    jpeg_destroy_decompress(&inputinfo);
     fclose(input_file);
 }
 
@@ -233,8 +233,6 @@ static node *instantiate_permutation(unsigned seed, struct coefficients *usable)
 static size_t *permutationArray(unsigned seed, size_t size) {
     srand(seed);
 
-    //instantiate a permutation of DCT coefficients, using Fisher-Yates algorithm
-    size_t *permutationArray = malloc(size * sizeof(size_t));
 
     for (size_t index = 0; index < size; index++) {
         permutationArray[index]=index;
@@ -250,10 +248,6 @@ static size_t *permutationArray(unsigned seed, size_t size) {
         permutationArray[index] = temp;
     }
 
-    printf("permutation array is ");
-    for (size_t i = 0; i < 15; i++) {
-        printf("%zu ", permutationArray[i]);
-    }
     printf("done permuting\n");
     return permutationArray;
 }
@@ -324,6 +318,11 @@ static size_t linked_list(const JBLOCKARRAY *coef_buffers, unsigned int seed, no
     if (!*permutation_array) {
         *permutation_array = permutationArray(seed, usable.size);
     }
+    printf("permutation array is ");
+    for (int i = 0; i < 15; i++) {
+        printf("%zu ", *permutation_array[i]);
+    }
+
     *root = permutate_coeffs(*permutation_array , &usable);
 
     free(usable.array);
@@ -375,7 +374,7 @@ static void write_DCT(const char *outputname, JBLOCKARRAY *coef_buffers, j_compr
 
         /* All done. */
         printf("New DCT coefficients successfully written to %s\n\n", outputname);
-        exit(jerr.num_warnings ? EXIT_FAILURE : EXIT_SUCCESS);
+//        exit(jerr.num_warnings ? EXIT_FAILURE : EXIT_SUCCESS);
 
     }
 }
@@ -412,11 +411,14 @@ static void extract(size_t message_size, node *root, size_t usable_size)
     }
 
     printf("began extracting...\n");
-    char *extractedMessage = malloc(message_size + 1);
+    char *extractedMessage = malloc(message_size/8 + 1);
+    memset(extractedMessage, 0, message_size/8 + 1);
+
     if (!extractedMessage) {
         perror("malloc");
         exit(1);
     }
+
     extractMessageFromCoefficients(root, usable_size, message_size, extractedMessage);
     printf("extractedMessage is %s\n", extractedMessage);
     free(extractedMessage);
@@ -470,6 +472,7 @@ int main(int argc, char * argv[])
         read_DCT(args.outputname, coef_buffers2, &outputinfo2);
         node *picture_root;
 //        size_t usable_size = make_linked_list(coef_buffers2, seed, &picture_root);
+
         size_t usable_size = linked_list(coef_buffers2, seed, &picture_root, &permutation_array);
         debugextract(args.message_size, picture_root, root, usable_size);
     }

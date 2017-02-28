@@ -377,7 +377,10 @@ void extractMessageFromCoefficients(node *root, size_t list_size, size_t output_
             if (message_bit_index > 7){ //we reach end of byte, so increment to next byte of allocated array
                 message_bit_index = 0;
                 message_index++;
-                output_buffer[message_index] = 0;
+            }
+
+            if (message_index >= message_size_in_bytes) {
+                break;
             }
             
             //get left-most bit from hash
@@ -387,7 +390,6 @@ void extractMessageFromCoefficients(node *root, size_t list_size, size_t output_
             //add bit to message's current byte
             if (message_bit) output_buffer[message_index] |= (1 << (7-message_bit_index));
             message_bit_index++;
-            
         }
 
     } //end while (message_index < message_length)
