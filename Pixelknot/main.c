@@ -146,6 +146,7 @@ static void init_usable_coeffs(const JBLOCKARRAY *coef_buffers, struct coefficie
     //First, get an array of all usable coefficients from DCT, which in our case are modes 1-4
     //buffer_coefficient usable_coefficient_array[height_in_blocks[0]*width_in_blocks[0]*4];
     usable->size = 0;
+    int zeros = 0;
     
     //only doing component = 0 so as to only embed in luma coefficients
     for (JDIMENSION rownum=0; rownum<height_in_blocks[0]; rownum++)
@@ -166,6 +167,8 @@ static void init_usable_coeffs(const JBLOCKARRAY *coef_buffers, struct coefficie
 
                     usable->array[usable->size] = usable_coefficient;
                     usable->size++;
+                } else {
+                    zeros++;
                 }
             }
         }
@@ -433,6 +436,26 @@ static void debugextract(size_t message_size, node *picture_root, node *other_ro
     free(extractedMessage);
 }
 
+static void compare_buffers(JBLOCKARRAY *b1, JBLOCKARRAY *b2) {
+    for (int compnum = 0; compnum<num_components; compnum++)
+    {
+        for (JDIMENSION rownum=0; rownum<height_in_blocks[compnum]; rownum++)
+        {
+            for (JDIMENSION blocknum=0; blocknum<width_in_blocks[compnum]; blocknum++)
+            {
+                for (int i=0; i<DCTSIZE2; i++)
+                {
+                    JCOEF this = b1[compnum][rownum][blocknum][i];
+                    JCOEF that = b2[compnum][rownum][blocknum][i];
+                    if (this != that) {
+                        printf("this %hd != that %hd \n", this, that);
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 int main(int argc, char * argv[])
 {
@@ -464,9 +487,14 @@ int main(int argc, char * argv[])
         char *debugname = "/Users/purpleprincess/Code/C/Pixelknot/Pixelknot/debug.jpg";
         setup_output(debugname, &outputinfo2);
         read_DCT(args.outputname, coef_buffers2, &outputinfo2);
+
+        compare_buffers(coef_buffers, coef_buffers2);
+
         node *picture_root;
         size_t usable_size = linked_list(coef_buffers2, seed, &picture_root, &permutation_array);
-        debugextract(args.message_size, picture_root, root, usable_size);
+        extract(args.message_size, picture_root, usable_size);
+
+//        debugextract(args.message_size, picture_root, root, usable_size);
     }
     else if (args.extractFlag) {
         extract(args.message_size, root, usable_size);

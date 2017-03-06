@@ -14,6 +14,7 @@ struct buffer_coefficient {
     unsigned int row_index;
     unsigned int column_index;
     unsigned int block_index;
+    unsigned int mode;
     short coefficient;
 };
 
